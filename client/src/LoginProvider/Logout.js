@@ -13,13 +13,13 @@ const Login = () => {
         try{
             const res=await axios.get(`${url}/api/provider/signout`,{
                 headers:{
-                    Authorization:localStorage.getItem('token'),
+                    Authorization:sessionStorage.getItem('token'),
                     "Content-Type":"application/json"
                 },
             })
             if(res.status===200){
                 localStorage.removeItem("id");
-                localStorage.removeItem("token");
+                sessionStorage.removeItem("token");
                 localStorage.removeItem("name");
                 localStorage.removeItem("onLine");
                 dispatch({type:"offline"});

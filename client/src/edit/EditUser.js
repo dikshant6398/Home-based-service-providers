@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 
 import axios from "axios";
 import { userContext } from "../App";
@@ -79,7 +79,7 @@ function EditUser() {
 
   return (
     <>
-      {onLine == 1 ? (
+      {Number(onLine) === 1 ? (
         <div>
           <div className="flex  items-center justify-center  bg-slate-300 border-1 border-gray-600 shadow-2xl">
             <h2 className="py-12 uppercase font-serif ">
@@ -170,7 +170,7 @@ function EditUser() {
             </form>
           </div>
         </div>
-      ) : onLine == 2 ? (
+      ) : Number(onLine) === 2 ? (
         <div>
           <div className="flex  items-center justify-center  bg-slate-300 border-1 border-gray-600 shadow-2xl">
             <h2 className="py-12 uppercase font-serif ">

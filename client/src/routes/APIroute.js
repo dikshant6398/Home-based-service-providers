@@ -1,5 +1,6 @@
-export const host = "http://localhost:8000";
-// const host = "https://servicely-backend.onrender.com";
+import url from '../url';
+
+export const host = url;
 export const loginRouteUser = `${host}/api/client/signin`;
 export const signUpRouteUser = `${host}/api/client/signup`;
 export const signUpRouteProvider = `${host}/api/provider/signup`;

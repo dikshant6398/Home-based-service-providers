@@ -55,7 +55,7 @@ const Login = () => {
         localStorage.setItem("city", location.city);
         localStorage.setItem("postalCode", location.postalCode);
         localStorage.setItem("id", data.id);
-        localStorage.setItem("token", data.token);
+        sessionStorage.setItem("token", data.token);
         localStorage.setItem("name", data.name);
         localStorage.setItem("onLine", 1);
         dispatch({ type: "online", payload: 1 });
@@ -85,7 +85,7 @@ const Login = () => {
         localStorage.setItem("city", location.city);
         localStorage.setItem("postalCode", location.postalCode);
         localStorage.setItem("id", data.id);
-        localStorage.setItem("token", data.token);
+        sessionStorage.setItem("token", data.token);
         localStorage.setItem("name", data.name);
         localStorage.setItem("onLine", 1);
         dispatch({ type: "online", payload: 1 });
@@ -109,7 +109,7 @@ const Login = () => {
         {
           method: "POST",
           headers: {
-            Authorization: localStorage.getItem("token"),
+            Authorization: sessionStorage.getItem("token"),
             "Content-Type": "application/json",
           },
         }

@@ -40,7 +40,6 @@ const ReverseGeocode = () => {
         `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&apiKey=2db1aa83396f46a48bc7138745561d10`
       );
       if (response.data.features && response.data.features.length > 0) {
-        const address = response.data.features[0].properties.formatted;
         dispatch({type:"location",payload:{city:response.data.features[0].properties.city,postalCode:response.data.features[0].properties.postcode}})
         console.log(response.data.features[0].properties.city);
         console.log(response.data.features[0].properties.postcode);
@@ -60,7 +59,7 @@ const ReverseGeocode = () => {
     }else{
       navigator.geolocation.watchPosition(onSuccess,onFailure,{enableHighAccuracy:true});
     }
-      
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   useEffect(()=>{
@@ -68,6 +67,7 @@ const ReverseGeocode = () => {
     if(location.loaded){
       handleButtonClick();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   },[location.loaded])
 
   return (

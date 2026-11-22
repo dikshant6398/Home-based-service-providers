@@ -22,7 +22,7 @@ const Sokcet = () => {
         const data=await axios.post(sendUrl,send,{
           method:"POST",
           headers:{
-            Authorization:localStorage.getItem("token"),
+            Authorization:sessionStorage.getItem("token"),
             "Content-Type":"application/json"
           }
         })
@@ -56,7 +56,7 @@ const Sokcet = () => {
 
   // Recieve
   useEffect(()=>{
-    if(localStorage.getItem("token") && socket){
+    if(sessionStorage.getItem("token") && socket){
     const handleReceive=(data)=>{
       dispatch({type:"message",payload:{
         id:data.chatId,
@@ -86,7 +86,7 @@ const Sokcet = () => {
           },{
             method:"POST",
             headers:{
-                Authorization:localStorage.getItem("token"),
+                Authorization:sessionStorage.getItem("token"),
                 "Content-Type":"application/json"
             }
         })
@@ -105,7 +105,7 @@ const Sokcet = () => {
           },{
             method:"POST",
             headers:{
-                Authorization:localStorage.getItem("token"),
+                Authorization:sessionStorage.getItem("token"),
                 "Content-Type":"application/json"
             }
         })
@@ -136,6 +136,7 @@ const Sokcet = () => {
         dispatch({type:"socket",payload:conn});
         conn.emit('setup',localStorage.getItem("id"));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   return (
