@@ -45,7 +45,7 @@ const Loginn = () => {
         return;
       } else {
         localStorage.setItem("id", data.id);
-        localStorage.setItem("token", data.token);
+        sessionStorage.setItem("token", data.token);
         localStorage.setItem("name", data.fname);
         localStorage.setItem("onLine", 2);
         dispatch({ type: "online", payload: 2 });
@@ -80,7 +80,7 @@ const Loginn = () => {
         console.log("Fail to Sign Up");
       } else {
         localStorage.setItem("id", data.data.id);
-        localStorage.setItem("token", data.data.token);
+        sessionStorage.setItem("token", data.data.token);
         localStorage.setItem("name", data.data.fname);
         localStorage.setItem("onLine", 2);
         dispatch({ type: "online", payload: 2 });

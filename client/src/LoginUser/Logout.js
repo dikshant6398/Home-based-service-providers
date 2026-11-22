@@ -13,7 +13,7 @@ const Logout = () => {
         try{
             const res=await axios.get(`${url}/api/client/signout`,{
                 headers:{
-                    Authorization:localStorage.getItem('token'),
+                    Authorization:sessionStorage.getItem('token'),
                     Accept:"application/json",
                 },
             })
@@ -25,7 +25,7 @@ const Logout = () => {
                     socket.disconnect();
                 }
                 localStorage.removeItem("id");
-                localStorage.removeItem("token");
+                sessionStorage.removeItem("token");
                 localStorage.removeItem("name");
                 localStorage.removeItem("onLine");
                 localStorage.removeItem("city");

@@ -42,7 +42,7 @@ const Chat = () => {
       },{
         method:"POST",
         headers:{
-          Authorization:localStorage.getItem('token'),
+          Authorization:sessionStorage.getItem('token'),
           "Content-Type":"application/json"
         }
     });

@@ -1,58 +1,58 @@
-const jwt=require("jsonwebtoken");
-const User=require('../models/user');
-const Pro=require('../models/provider');
+const jwt = require("jsonwebtoken");
+const User = require('../models/user');
+const Pro = require('../models/provider');
 
-const authenticateUser=async(req,res,next)=>{
-    try{
-        let token=req.headers.authorization;
-        if(!token){
-            res.status(401).send("Authorization Fails")
+const authenticateUser = async (req, res, next) => {
+    try {
+        let token = req.headers.authorization;
+        if (!token) {
+            return res.status(401).json({ error: "Authorization failed: No token provided" });
         }
-        if(token.startsWith('Bearer ')){
-            token=token.split(' ')[1];
+        if (token.startsWith('Bearer ')) {
+            token = token.split(' ')[1];
         }
-        const verify=jwt.verify(token,process.env.SECRET_KEY);
-        const userExist=await User.findOne({_id:verify._id,"tokens.token":token});
-        if(!userExist){
-            throw new Error("User Not Found");
+        const verify = jwt.verify(token, process.env.SECRET_KEY);
+        const userExist = await User.findOne({ _id: verify._id, "tokens.token": token });
+        if (!userExist) {
+            return res.status(401).json({ error: "User not found" });
         }
 
-        req.token=token;
-        req.rootUser=userExist;
-        req.userId=userExist._id;
+        req.token = token;
+        req.rootUser = userExist;
+        req.userId = userExist._id;
 
         next();
-    }catch(err){
-        console.log("Auth fail")
-        console.log(err);
+    } catch (err) {
+        console.log("Auth fail:", err.message);
+        return res.status(401).json({ error: "Authentication failed" });
     }
-}
+};
 
-const authenticatePro=async(req,res,next)=>{
-    try{
-        let token=req.headers.authorization;
-        if(!token){
-            res.status(401).send("Authorization Fails")
+const authenticatePro = async (req, res, next) => {
+    try {
+        let token = req.headers.authorization;
+        if (!token) {
+            return res.status(401).json({ error: "Authorization failed: No token provided" });
         }
-        if(token.startsWith('Bearer ')){
-            token=token.split(' ')[1];
+        if (token.startsWith('Bearer ')) {
+            token = token.split(' ')[1];
         }
-        const verify=jwt.verify(token,process.env.SECRET_KEY);
-        const userExist=await Pro.findOne({_id:verify._id,"tokens.token":token});
+        const verify = jwt.verify(token, process.env.SECRET_KEY);
+        const userExist = await Pro.findOne({ _id: verify._id, "tokens.token": token });
 
-        if(!userExist){
-            throw new Error("User Not Found");
+        if (!userExist) {
+            return res.status(401).json({ error: "Provider not found" });
         }
 
-        req.token=token;
-        req.rootUser=userExist;
-        req.userId=userExist._id;
+        req.token = token;
+        req.rootUser = userExist;
+        req.userId = userExist._id;
 
         next();
-    }catch(err){
-        console.log(err);
-        console.log("Auth fail")
+    } catch (err) {
+        console.log("Auth fail:", err.message);
+        return res.status(401).json({ error: "Authentication failed" });
     }
-}
+};
 
-module.exports={authenticateUser,authenticatePro};
+module.exports = { authenticateUser, authenticatePro };

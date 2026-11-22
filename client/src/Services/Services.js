@@ -32,7 +32,7 @@ const Services = () => {
         `${url}/api/client/service?city=${location.city}&pincode=${location.postalCode}&work=${work}`,
         {
           headers: {
-            Authorization: localStorage.getItem("token"),
+            Authorization: sessionStorage.getItem("token"),
           },
         }
       );
