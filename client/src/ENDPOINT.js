@@ -1,3 +1,4 @@
-const ENDPOINT = "https://servicely-backend.onrender.com/";
-// const ENDPOINT = "http://localhost:8000/";
+import url from './url';
+
+const ENDPOINT = url;
 export default ENDPOINT;

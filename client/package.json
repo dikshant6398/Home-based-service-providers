@@ -33,7 +33,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start:local": "node -e \"process.env.REACT_APP_SERVER_URL='http://localhost:8000'; require('react-scripts/scripts/start')\"",
+    "local": "node -e \"process.env.REACT_APP_SERVER_URL='http://localhost:8000'; require('react-scripts/scripts/start')\"",
+    "build": "node -e \"process.env.CI='false'; require('react-scripts/scripts/build')\"",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

@@ -136,6 +136,7 @@ const Sokcet = () => {
         dispatch({type:"socket",payload:conn});
         conn.emit('setup',localStorage.getItem("id"));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   return (
