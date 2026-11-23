@@ -17,6 +17,7 @@ import Message from "./Message/Message";
 import Socket from "./Socket/Socket";
 import Nav from "./Nav/Nav";
 import ErrorPage from "./errorPage/ErrorPage";
+import ScrollToTop from "./ScrollToTop";
 import "./Css/index.css";
 import "./Css/card.css";
 import "./Css/search.css";
@@ -148,6 +149,7 @@ const App = () => {
   return (
     <>
       <userContext.Provider value={{ state, dispatch }}>
+        <ScrollToTop />
         <Nav />
         <Socket />
         <Routes>

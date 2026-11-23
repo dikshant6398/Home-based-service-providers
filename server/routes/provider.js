@@ -18,7 +18,7 @@ router.route("/signin").post(signin);
 //Authentication
 
 router.route("/details").post(authenticatePro, details);
-router.route("/signout").get(authenticatePro, signout);
+router.route("/signout").get(signout);
 router.route("/send").post(authenticatePro, send);
 router.route("/edit").put(edit);
 

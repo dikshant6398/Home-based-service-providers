@@ -1,59 +1,83 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-var data = require("./MOCK_DATA.json");
+import { useNavigate } from "react-router-dom";
+import { HiSearch } from "react-icons/hi";
+const data = require("./MOCK_DATA.json");
 
+const SearchBar = () => {
+  const [value, setValue] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
+  const handleSearch = (searchTerm) => {
+    const term = searchTerm || value;
+    if (!term.trim()) return;
+    setIsOpen(false);
+    navigate(`/Service?${encodeURIComponent(term.trim())}`);
+  };
 
-const SearchBar = (props) => {
-    const [value, setValue] = useState("");
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSearch();
+    }
+  };
 
-    const onChange = (event) => {
-        setValue(event.target.value);
-    };
+  const filteredItems = data.filter((item) => {
+    const searchTerm = value.toLowerCase().trim();
+    const fullName = (item.full_name || "").toLowerCase();
+    return searchTerm && fullName.includes(searchTerm) && fullName !== searchTerm;
+  }).slice(0, 6);
 
-    const onSearch = (searchTerm) => {
-        setValue(searchTerm);
-        // our api to fetch the search result
-        console.log("search ", searchTerm);
-    };
-
-    return (
-        <div className="">
-
-            <div className=" flex">
-                
-                <label for="simple-search" class="sr-only">Search</label>
-                <div class="relative w-60">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
-                    </div>
-                    <input type="text" value={value} onChange={onChange} id="simple-search" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5" placeholder="Search" required></input>
-                </div>
-                <Link to={"/Service?" + value}><button type="submit" onClick={() => onSearch(value)} class="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    <span class="sr-only">Search</span>
-                </button></Link>
-
-            </div>
-            <div className="text-center mx-auto">
-                {data
-                    .filter((item) => {
-                        const searchTerm = value.toLowerCase();
-                        const fullName = item.full_name.toLowerCase();
-
-                        return (
-                            searchTerm && fullName.startsWith(searchTerm) && fullName !== searchTerm);
-                    })
-                    .map((item) => (
-                        <div onClick={() => onSearch(item.full_name)} className="dropdown-row text-center"
-                            key={item.full_name}
-                        >
-                            {item.full_name}
-                        </div>
-                    ))}
-            </div>
+  return (
+    <div className="relative w-full max-w-xl mx-auto">
+      <div className="flex items-center rounded-2xl bg-white p-2 shadow-xl shadow-slate-200/60 border border-slate-200/80 transition-all focus-within:border-blue-600 focus-within:ring-4 focus-within:ring-blue-100">
+        <div className="pl-3 pr-2 text-slate-400">
+          <HiSearch className="w-5 h-5" />
         </div>
-    );
-}
+        
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => {
+            setValue(e.target.value);
+            setIsOpen(true);
+          }}
+          onFocus={() => setIsOpen(true)}
+          onKeyDown={handleKeyDown}
+          className="w-full bg-transparent text-sm md:text-base text-slate-800 placeholder-slate-400 focus:outline-none"
+          placeholder="Search for 'Plumber', 'AC Repair', 'Cleaning'..."
+        />
+
+        <button
+          type="button"
+          onClick={() => handleSearch()}
+          className="ml-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-sm font-semibold shadow-md shadow-blue-500/20 transition-all whitespace-nowrap"
+        >
+          Find Pros
+        </button>
+      </div>
+
+      {/* Auto-suggest dropdown */}
+      {isOpen && filteredItems.length > 0 && (
+        <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-slate-200 divide-y divide-slate-100 overflow-hidden z-40 animate-in fade-in slide-in-from-top-1 duration-150">
+          {filteredItems.map((item, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => {
+                setValue(item.full_name);
+                handleSearch(item.full_name);
+              }}
+              className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-2 transition-colors"
+            >
+              <HiSearch className="w-4 h-4 text-slate-400" />
+              <span>{item.full_name}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default SearchBar;

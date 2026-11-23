@@ -1,5 +1,6 @@
 const Pro = require("../models/provider");
 const Message = require("../models/message");
+const jwt = require("jsonwebtoken");
 
 const signup = async (req, res) => {
   try {
@@ -77,16 +78,21 @@ const signin = async (req, res) => {
 const signout = async (req, res) => {
   try {
     res.clearCookie("jwt");
-    const data = await Pro.findOne({ _id: req.userId });
-    await Pro.updateOne(
-      { _id: req.userId },
-      {
-        tokens: [],
+    let token = req.headers.authorization;
+    if (token) {
+      if (token.startsWith("Bearer ")) token = token.split(" ")[1];
+      try {
+        const verify = jwt.verify(token, process.env.SECRET_KEY);
+        if (verify && verify._id) {
+          await Pro.updateOne({ _id: verify._id }, { tokens: [] });
+        }
+      } catch (e) {
+        // Token was already expired or invalid
       }
-    );
-    return res.status(200).json({ messege: "successfully log out" });
+    }
+    return res.status(200).json({ message: "Successfully logged out" });
   } catch (err) {
-    return res.status(400).send({ error: "Credentials does not Match" });
+    return res.status(200).json({ message: "Successfully logged out" });
   }
 };
 

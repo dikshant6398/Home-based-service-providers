@@ -1,48 +1,48 @@
 import { useContext, useEffect } from 'react';
-import {useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { userContext } from '../App';
 import axios from 'axios';
-import url from '../url'
+import url from '../url';
 import Spinner from '../spinner/Spinner';
 
 const Login = () => {
-    const navigate=useNavigate();
-    const {dispatch,state:{socket}}=useContext(userContext);  
+  const navigate = useNavigate();
+  const { dispatch, state: { socket } } = useContext(userContext);
 
-    const callLogOut=async()=>{
-        try{
-            const res=await axios.get(`${url}/api/provider/signout`,{
-                headers:{
-                    Authorization:sessionStorage.getItem('token'),
-                    "Content-Type":"application/json"
-                },
-            })
-            if(res.status===200){
-                localStorage.removeItem("id");
-                sessionStorage.removeItem("token");
-                localStorage.removeItem("name");
-                localStorage.removeItem("onLine");
-                dispatch({type:"offline"});
-                if(Object.keys(socket).length!==0)socket.disconnect();
-                navigate('/');
-            }else{  
-                console.log("Error");
-                throw new Error("Logout Failed")
-            }
-        }catch(err){
-            console.log(err);
-        }
+  const callLogOut = async () => {
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      if (token && token !== "null" && token !== "undefined") {
+        await axios.get(`${url}/api/provider/signout`, {
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+        });
+      }
+    } catch (err) {
+      console.log("Server provider logout notice (handled):", err.message);
+    } finally {
+      // ALWAYS clear local state and navigate regardless of server response
+      if (socket && typeof socket.disconnect === 'function') {
+        socket.disconnect();
+      }
+      sessionStorage.removeItem("token");
+      localStorage.removeItem("id");
+      localStorage.removeItem("token");
+      localStorage.removeItem("name");
+      localStorage.removeItem("onLine");
+      dispatch({ type: "offline" });
+      navigate('/');
     }
+  };
 
-    useEffect(()=>{
-        callLogOut();
-    },[])
+  useEffect(() => {
+    callLogOut();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
+  return <Spinner />;
+};
 
-  return (
-    <>
-     <Spinner/>
-    </>
-  )
-}
 export default Login;

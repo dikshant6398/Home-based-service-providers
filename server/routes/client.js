@@ -18,7 +18,7 @@ router.route("/signin").post(signin);
 
 //Authentication
 
-router.route("/signout").get(authenticateUser, signout);
+router.route("/signout").get(signout);
 router.route("/service").get(authenticateUser, service);
 router.route("/create").post(authenticateUser, create);
 router.route("/details").post(authenticateUser, details);

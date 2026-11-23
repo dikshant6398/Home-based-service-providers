@@ -1,84 +1,157 @@
-import React, { useContext, useState , useRef , useEffect } from 'react'
-import { userContext } from '../App';
+import React, { useContext, useState, useRef, useEffect } from "react";
+import { userContext } from "../App";
+import { HiPaperAirplane, HiShieldCheck, HiArrowLeft } from "react-icons/hi";
+import { useNavigate } from "react-router-dom";
 
 const Chatting = () => {
+  const navigate = useNavigate();
+  const {
+    state: { provider, chat },
+    dispatch,
+  } = useContext(userContext);
 
-  const { state: {provider, chat }, dispatch } = useContext(userContext);
   const [content, setContent] = useState("");
-  const inputRef = useRef(null); 
+  const chatBodyRef = useRef(null);
 
+  const scrollToBottom = () => {
+    if (chatBodyRef.current) {
+      chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+    }
+  };
 
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, []);
+    scrollToBottom();
+  }, [chat?.message]);
+
+  const handleSend = (e) => {
+    e.preventDefault();
+    if (!content.trim() || !chat) return;
+
+    dispatch({
+      type: "send",
+      payload: {
+        id: chat.provider?._id || provider?._id,
+        chatId: chat._id,
+        sender: 1,
+        content: content.trim(),
+      },
+    });
+    setContent("");
+  };
+
+  const providerName =
+    (provider && `${provider.fname || ""} ${provider.lname || ""}`.trim()) ||
+    (chat?.provider && `${chat.provider.fname || ""} ${chat.provider.lname || ""}`.trim()) ||
+    "Service Professional";
+
+  const initials = providerName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 
   return (
-    <div className='mb-7 p-2'>
-      <div className="w-full  flex flex-col"  >
-        <div className="py-2 px-3 bg-grey-lighter border-y w-full my-1 flex flex-row justify-between items-center ">
-          <div className="flex items-center">
-            <div>
-              <img className="w-10 h-10 rounded-full" src="./icons/Default.png" />
-            </div>
-            <div className="ml-4">
-              <p className="text-grey-darkest font-bold text-xl">
-                {provider.fname +" "+ provider.lname}
-              </p>
-              <p className="text-grey-darker text-xs mt-1">
-                {provider.city} , {provider.profession}
-              </p>
-            </div>
-          </div>
-        </div>
-        {
-          chat ? chat.message.map((item) => (
-            <div className={`flex mb-2 ${item.sender === 1 ? 'justify-end' : 'justify-start'}`}>
-              {
-                item.sender === 1 ? (
-                  <div className="rounded py-2 px-3 md:mx-5   -mx-2 bg-[#F2F2F2]">
-                    <p className="text-sm mt-1">
-                      {item.content}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="rounded py-2 px-3 md:mx-5   -mx-2 bg-blue-500 text-white">
-                    <p className="text-sm mt-1">
-                      {item.content}
-                    </p>
-                  </div>
-                )
-              }
-            </div>
-          )) : <></>
-        }
-        <div className="bg-grey-lighter px-4 py-4 flex items-center" ref={inputRef}>
-          <div>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path opacity=".45" fill="#263238" d="M9.153 11.603c.795 0 1.439-.879 1.439-1.962s-.644-1.962-1.439-1.962-1.439.879-1.439 1.962.644 1.962 1.439 1.962zm-3.204 1.362c-.026-.307-.131 5.218 6.063 5.551 6.066-.25 6.066-5.551 6.066-5.551-6.078 1.416-12.129 0-12.129 0zm11.363 1.108s-.669 1.959-5.051 1.959c-3.505 0-5.388-1.164-5.607-1.959 0 0 5.912 1.055 10.658 0zM11.804 1.011C5.609 1.011.978 6.033.978 12.228s4.826 10.761 11.021 10.761S23.02 18.423 23.02 12.228c.001-6.195-5.021-11.217-11.216-11.217zM12 21.354c-5.273 0-9.381-3.886-9.381-9.159s3.942-9.548 9.215-9.548 9.548 4.275 9.548 9.548c-.001 5.272-4.109 9.159-9.382 9.159zm3.108-9.751c.795 0 1.439-.879 1.439-1.962s-.644-1.962-1.439-1.962-1.439.879-1.439 1.962.644 1.962 1.439 1.962z"></path></svg>
-          </div>
-          <div className="flex-1 mx-4">
-            <input className="w-full border rounded px-2 py-2" value={content} type="text" placeholder='Type...' onChange={(e) => setContent(e.target.value)} />
-          </div>
-          <div>
+    <div className="max-w-4xl mx-auto px-4 py-6">
+      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-md overflow-hidden flex flex-col h-[75vh]">
+        
+        {/* Header */}
+        <div className="px-6 py-4 bg-white border-b border-slate-100 flex items-center justify-between">
+          <div className="flex items-center gap-3">
             <button
-              onClick={() => {
-                dispatch({
-                  type: "send", payload: {
-                    id: chat.provider._id,
-                    chatId: chat._id,
-                    sender: 1,
-                    content: content,
-                  }
-                })
-                setContent("")
-              }}><img className=' w-6 ' src='./icons/send.png' /></button>
+              type="button"
+              onClick={() => navigate(-1)}
+              className="p-1.5 rounded-xl hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors"
+              aria-label="Go back"
+            >
+              <HiArrowLeft className="w-5 h-5" />
+            </button>
+            
+            <div className="relative">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-sm flex items-center justify-center shadow-sm">
+                {initials || "SP"}
+              </div>
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
+            </div>
 
+            <div>
+              <div className="flex items-center gap-1.5">
+                <h3 className="text-sm sm:text-base font-bold text-slate-900">
+                  {providerName}
+                </h3>
+                <HiShieldCheck className="w-4 h-4 text-blue-600" />
+              </div>
+              <p className="text-xs text-slate-500">
+                {provider?.profession || "Home Specialist"} • {provider?.city || "Local"}
+              </p>
+            </div>
+          </div>
+
+          <div className="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-50 text-emerald-600">
+            Online
           </div>
         </div>
+
+        {/* Messages Body */}
+        <div ref={chatBodyRef} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 bg-slate-50/60">
+          {chat && chat.message && chat.message.length > 0 ? (
+            chat.message.map((item, idx) => {
+              const isUser = item.sender === 1;
+              return (
+                <div
+                  key={idx}
+                  className={`flex ${isUser ? "justify-end" : "justify-start"}`}
+                >
+                  <div
+                    className={`max-w-[78%] sm:max-w-md px-4 py-2.5 text-sm shadow-xs ${
+                      isUser
+                        ? "bg-blue-600 text-white rounded-2xl rounded-tr-xs"
+                        : "bg-white text-slate-800 border border-slate-200/80 rounded-2xl rounded-tl-xs"
+                    }`}
+                  >
+                    <p className="leading-relaxed break-words">{item.content}</p>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="h-full flex flex-col items-center justify-center text-center text-slate-400 p-6">
+              <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-2">
+                <HiPaperAirplane className="w-6 h-6 rotate-45" />
+              </div>
+              <p className="text-sm font-semibold text-slate-600">Say hello!</p>
+              <p className="text-xs text-slate-400 mt-1 max-w-xs">
+                Describe your repair requirement, share your address, or ask for a price quote.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Input Footer */}
+        <form
+          onSubmit={handleSend}
+          className="p-3 sm:p-4 bg-white border-t border-slate-100 flex items-center gap-2"
+        >
+          <input
+            type="text"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="Type your message..."
+            className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+          />
+          <button
+            type="submit"
+            disabled={!content.trim()}
+            className="p-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:hover:bg-blue-600 text-white shadow-sm shadow-blue-500/20 active:scale-95 transition-all"
+            aria-label="Send message"
+          >
+            <HiPaperAirplane className="w-5 h-5 rotate-90" />
+          </button>
+        </form>
+
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Chatting
+export default Chatting;
